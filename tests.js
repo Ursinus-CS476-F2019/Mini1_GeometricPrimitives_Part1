@@ -18,11 +18,21 @@ function evalArgs(args) {
 }
 
 function prettyvec3(v) {
-    return "vec3(" + v[0].toFixed(2) + ", " + v[1].toFixed(2) + ", " + v[2].toFixed(2) + ")";
+    try {
+        return "vec3(" + v[0].toFixed(2) + ", " + v[1].toFixed(2) + ", " + v[2].toFixed(2) + ")";
+    }
+    catch {
+        return "" + v;
+    }
 }
 
 function prettyfloat(x) {
-    return x.toFixed(2);
+    try {
+        return x.toFixed(2);
+    }
+    catch {
+        return "" + x;
+    }
 }
 
 /**
@@ -31,7 +41,12 @@ function prettyfloat(x) {
  * @param {number} y 
  */
 function nearFloats(x, y) {
-    return eval(x.toFixed(2)) == eval(y.toFixed(2));
+    try {
+        return eval(x.toFixed(2)) == eval(y.toFixed(2));
+    }
+    catch(err) {
+        return false;
+    }
 }
 
 /**
@@ -40,21 +55,26 @@ function nearFloats(x, y) {
  * @param {vec3} y 
  */
 function nearVecs(x, y) {
-    let diff = vec3.create();
-    vec3.subtract(diff, x, y);
-    let magSqr = vec3.dot(diff, diff);
-    let xmagSqr = vec3.dot(x, x);
-    let ymagSqr = vec3.dot(y, y);
-    if (xmagSqr == 0 && ymagSqr == 0) {
-        return true;
+    try {
+        let diff = vec3.create();
+        vec3.subtract(diff, x, y);
+        let magSqr = vec3.dot(diff, diff);
+        let xmagSqr = vec3.dot(x, x);
+        let ymagSqr = vec3.dot(y, y);
+        if (xmagSqr == 0 && ymagSqr == 0) {
+            return true;
+        }
+        else if (xmagSqr == 0 || ymagSqr == 0) {
+            return false;
+        }
+        else if (magSqr/xmagSqr < 1e-5 && magSqr/ymagSqr < 1e-5) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    else if (xmagSqr == 0 || ymagSqr == 0) {
-        return false;
-    }
-    else if (magSqr/xmagSqr < 1e-5 && magSqr/ymagSqr < 1e-5) {
-        return true;
-    }
-    else {
+    catch(err) {
         return false;
     }
 }
